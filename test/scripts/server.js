@@ -46,6 +46,10 @@ app.io.on("connection", function(socket) {
 	socket.on("get_session", function(param) {
 		socket.emit("session_param", {param: param, value: socket.session[param]});
 	});
+	socket.on("set_session", function(o) {
+		socket.session[o.param] = o.value;
+		socket.session.save();
+	});
 });
 
 sockpress.listen(3333, function() {

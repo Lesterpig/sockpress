@@ -8,7 +8,7 @@
 <body>
   <div id="mocha"></div>
   <script src="mocha.js"></script>
-  <script>mocha.setup('bdd')</script>
+  <script>mocha.setup({ui: "bdd", bail: true, slow:500, timeout: 1000})</script>
   <script src="test.browser.js"></script>
   <script>
     mocha.checkLeaks();
