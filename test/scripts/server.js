@@ -52,6 +52,6 @@ app.io.on("connection", function(socket) {
 	});
 });
 
-sockpress.listen(3333, function() {
+app.listen(3333, function() {
 	process.stdout.write("READY");
 });
