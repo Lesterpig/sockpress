@@ -52,6 +52,15 @@ app.io.on("connection", function(socket) {
 	});
 });
 
+app.io.route("simple route", function(socket, data) {
+	socket.emit("simple route ok");
+});
+
+app.io.route("another simple route", function(socket, data) {
+	if(data !== "hello") throw Error(data + " !== hello");
+	socket.emit("another simple route ok", {foo: "bar"});
+});
+
 app.listen(3333, function() {
 	process.stdout.write("READY");
 });

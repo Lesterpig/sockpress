@@ -18,7 +18,7 @@ function startServer(callback) {
 
 	serverProcess.stdout.on("data", function(m) {
 		if(m === "READY") callback();
-		else console.log("\n\n"+m+"\n\n");
+		else console.log(m);
 	});
 	serverProcess.stderr.on("data", function(m) {
 		throw Error(m);
@@ -112,6 +112,32 @@ describe("Sockpress", function() {
 				});
 			});
 
+		});
+
+		//more tests in browser tests.
+
+	});
+
+	describe("IO Routes Features", function() {
+
+		it("should work with one route", function(done) {
+			var _client = socketClient(__BASE_URL, {'force new connection': true});
+			_client.on("welcome", function() {
+				_client.emit("simple route");
+				_client.on("simple route ok", done);
+			});
+		});
+
+		it("should work with another route", function(done) {
+			var _client = socketClient(__BASE_URL, {'force new connection': true});
+			_client.on("welcome", function() {
+				_client.emit("another simple route", "hello");
+				_client.on("simple route ok", function() { throw Error("Unexpected ok signal")});
+				_client.on("another simple route ok", function(m) {
+					if(m.foo !== "bar") throw Error("m.foo !== 'bar'");
+					done();
+				});
+			});
 		});
 
 	});

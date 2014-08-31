@@ -21,8 +21,32 @@ Sockpress adds the **socket.io** object to the **express** one. **It does not ch
 Sockpress initialization creates express and socket server **with automatic shared session support**.
 
 ```javascript
-var app = require("sockpress").init({secret: "key"});
+var app = require("sockpress").init(options);
 ```
+
+An example to work with classic session store (memory) :
+
+```javascript
+var options = {
+	secret: "a secret key",
+	saveUninitialized: false
+}
+```
+
+An example to work with **connect-redis** session : *(not fully tested yet)*
+
+```javascript
+var session = require('express-session');
+var RedisStore = require('connect-redis')(session);
+
+var options = { 
+  secret: "A Secret Key for cookie Encryption",
+  store: new RedisStore({host:'127.0.0.1'}),
+  name: "my-cookie-key"
+}
+```
+
+*[List of options available](https://github.com/expressjs/session#options)*
 
 ### Define routes
 
@@ -42,6 +66,17 @@ app.io.on("connection", function(socket) {
 	socket.broadcast.emit("newUser"); //broadcast to other users
 });
 ```
+
+You can also use a fresh utility provided by Sockpress : **app.io.route(socket, data)**
+
+```javascript
+app.io.route("send message", function(socket, data) {
+	socket.emit("message sent", data);
+	socket.broadcast.emit("new message", data);
+});
+```
+
+**Note :** It does not support namespaces yet. The idea comes from Express.io
 
 ### Start Sockpress !
 

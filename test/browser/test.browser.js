@@ -59,7 +59,7 @@ describe("Browser Tests", function() {
 						}
 						done();
 					});
-				}, 300);
+				}, 200);
 			});
 		});
 
