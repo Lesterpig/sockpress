@@ -50,11 +50,30 @@ app.io.on("connection", function(socket) {
 		socket.session[o.param] = o.value;
 		socket.session.save();
 	});
+	socket.on("disconnect me", function() {
+		socket.disconnect();
+	});
+	socket.on("broadcast message", function(msg) {
+		socket.broadcast.emit("broadcasted message", msg);
+	});
+	socket.on("join room", function(room) {
+		joinRoom(socket, room);
+	});
 });
 
 app.io.route("simple route", function(socket, data) {
 	socket.emit("simple route ok");
 });
+
+app.io.route("route disconnect me", function(socket, data) {
+	socket.disconnect();
+});
+
+app.io.route("route broadcast message", function(socket, msg) {
+	socket.broadcast.emit("broadcasted message", msg);
+});
+
+app.io.route("route join room", joinRoom);
 
 app.io.route("another simple route", function(socket, data) {
 	if(data !== "hello") throw Error(data + " !== hello");
@@ -64,3 +83,10 @@ app.io.route("another simple route", function(socket, data) {
 app.listen(3333, function() {
 	process.stdout.write("READY");
 });
+
+function joinRoom(socket, room) {
+	socket.join(room);
+	socket.broadcast.to(room).emit("room joined", room); //should not be sent
+	socket.emit("room joined", room); //should be sent
+	app.io.to(room).emit("room joined", room); //should be sent
+}
