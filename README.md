@@ -11,6 +11,13 @@ Because building an app with express and socket.io could be complex and redundan
 
 Written in **full javascript** with the KiSS protocol : *Keep it Short and Simple* !
 
+Install
+-------
+
+```
+npm install sockpress
+```
+
 How to use ?
 ------------
 
