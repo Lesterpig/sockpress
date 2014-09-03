@@ -144,6 +144,17 @@ describe("Sockpress", function() {
 			});
 		});
 
+		it("should accepts namespaces", function(done) {
+			var _client = socketClient(__BASE_URL + "/namespace", {'force new connection': true});
+			_client.on("welcome namespace", function() {
+				_client.emit("ping namespace", "hello");
+				_client.on("pong namespace", function(data) {
+					assert.equal("hello", data);
+					done();
+				})
+			});
+		});
+
 		runSocketTests("route ");
 
 	});

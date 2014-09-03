@@ -1,7 +1,7 @@
-Sockpress
+sockpress
 =========
 
-A simple express.js and socket.io wrapper for nodejs (work in progress).
+A simple express.js and socket.io wrapper for nodejs.
 **Note** : Sockpress is not able to manage https servers for the moment.
 
 Why ?
@@ -40,7 +40,7 @@ var options = {
 }
 ```
 
-An example to work with **connect-redis** session : *(not fully tested yet)*
+An example to work with **connect-redis** session :
 
 ```javascript
 var session = require('express-session');
@@ -83,7 +83,13 @@ app.io.route("send message", function(socket, data) {
 });
 ```
 
-**Note :** It does not support namespaces yet. The idea comes from Express.io
+**New !** From 0.0.3, it supports namespaces :
+
+```javascript
+app.io.route("/users", "send message", function(socket, data) {
+	// ...
+});
+```
 
 ### Start Sockpress !
 
@@ -91,8 +97,17 @@ app.io.route("send message", function(socket, data) {
 app.listen(3000);
 ```
 
+### Test Sockpress (needs a GUI for browser tests)
+
+```bash
+git clone https://github.com/Lesterpig/sockpress.git
+cd sockpress
+npm test
+```
+
 Project Status
 --------------
 
-The project is new on github. **It is not ready for production yet.**
-However, 0.1.0 version should appear soon on NPM. Stay tuned :)
+The project is new on github. However, it **seems** ready for production.
+
+I use it in my personnal projects, and it works well. **sockpress@0.1.0** would be released soon for production purposes.

@@ -80,6 +80,15 @@ app.io.route("another simple route", function(socket, data) {
 	socket.emit("another simple route ok", {foo: "bar"});
 });
 
+//Namespace test
+app.io.of("/namespace").on("connection", function(socket) {
+	socket.emit("welcome namespace");
+});
+
+app.io.route("/namespace", "ping namespace", function(socket, data) {
+	socket.emit("pong namespace", data);
+});
+
 app.listen(3333, function() {
 	process.stdout.write("READY");
 });
