@@ -35,7 +35,7 @@ describe("Browser Tests", function() {
 		});
 
 		it("should get this variable via socket.io", function(done) {
-			socket = io(__BASE_URL);
+			socket = io(__BASE_URL, {'force new connection': true});
 			socket.io._reconnection = false;
 			socket.on("welcome", function() {
 				socket.emit("get_session", "foo");

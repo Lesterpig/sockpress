@@ -1,8 +1,7 @@
 sockpress
 =========
 
-A simple express.js and socket.io wrapper for nodejs.
-**Note** : Sockpress is not able to manage https servers for the moment.
+A simple express.js and socket.io wrapper for nodejs
 
 Why ?
 -----
@@ -38,6 +37,7 @@ var options = {
 	secret: "a secret key",
 	saveUninitialized: false
 }
+var app = require("sockpress").init(options);
 ```
 
 An example to work with **connect-redis** session :
@@ -47,13 +47,31 @@ var session = require('express-session');
 var RedisStore = require('connect-redis')(session);
 
 var options = { 
-  secret: "A Secret Key for cookie Encryption",
+  secret: "a secret key",
   store: new RedisStore({host:'127.0.0.1'}),
   name: "my-cookie-key"
 }
+var app = require("sockpress").init(options);
 ```
 
-*[List of options available](https://github.com/expressjs/session#options)*
+*[List of available options for sessions](https://github.com/expressjs/session#options)*
+
+### Use it with HTTPS
+
+**New !** You can use sockpress as a HTTPS server. Just pass a `https` option to sockpress, containing https details.
+
+```javascript
+var options = {
+	secret: "a secret key",
+	https: {
+		key: privateKey,
+		cert: serverCert
+	}
+}
+var app = require("sockpress").init(options);
+```
+
+*[List of available options for https](http://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener)*
 
 ### Define routes
 
