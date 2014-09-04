@@ -2,7 +2,6 @@
 
 var sockpress = require("../../lib/index");
 var assert = require("assert");
-var express = require("express");
 
 var app = sockpress.init({secret: "key"});
 
@@ -13,7 +12,7 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use(express.static(require("path").join(__dirname, "..", "browser")));
+app.use(app.express.static(require("path").join(__dirname, "..", "browser")));
 
 app.get("/foo", function(req, res) {
 	res.send("bar");

@@ -73,6 +73,16 @@ var app = require("sockpress").init(options);
 
 *[List of available options for https](http://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener)*
 
+### Add express middlewares as usual
+
+You can include your favorite express middleware like a classic express app ! For convenience, sockpress exposes the `express` raw object in `app.express`.
+
+```javascript
+app.use(app.express.static(require("path").join(__dirname, "static")));
+```
+
+**Important** : use Express 4 middlewares, see [documentation](http://expressjs.com/migrating-4.html#core-changes).
+
 ### Define routes
 
 For classic routes, you don't have to change your code. See [express docs](http://expressjs.com/4x/api.html).
@@ -113,7 +123,11 @@ app.io.route("/users", "send message", function(socket, data) {
 
 ```javascript
 app.listen(3000);
+// or
+app.listen(3000, "127.0.0.1");
 ```
+
+see [nodejs http(s) doc](http://nodejs.org/api/http.html#http_server_listen_port_hostname_backlog_callback)
 
 ### Test Sockpress (needs a GUI for browser tests)
 
