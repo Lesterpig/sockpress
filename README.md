@@ -56,6 +56,8 @@ var app = require("sockpress").init(options);
 
 *[List of available options for sessions](https://github.com/expressjs/session#options)*
 
+If you dont want sockpress to create a session store, just pass `options.disableSession = true` parameter.
+
 ### Use it with HTTPS
 
 **New !** You can use sockpress as a HTTPS server. Just pass a `https` option to sockpress, containing https details.

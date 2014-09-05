@@ -50,6 +50,25 @@ describe("Sockpress (HTTPS)", function() {
 
 });
 
+describe("Sockpress (HTTP No Session)", function() {
+	
+
+	beforeEach(function(done) {
+		__BASE_URL = "http://localhost:" + __TEST_PORT;
+		if (serverProcess) return done();
+		startServer("noSession", done);
+	});
+
+	after(function(done) {
+		serverProcess.kill("SIGKILL");
+		serverProcess = null;
+		setTimeout(done, 1000); //system cooldown
+	});
+
+	describe("Basic Features", runBasicTests);
+
+});
+
 describe("Sockpress (HTTP)", function() {
 
 	beforeEach(function(done) {
@@ -202,7 +221,9 @@ function runBasicTests() {
 	});
 
 	it("should be able to connect to socket.io and emit/receive events", function(done) {
-		var _client = socketClient(__BASE_URL);
+		var _client = socketClient(__BASE_URL, {
+			'force new connection': true
+		});
 		_client.on("welcome", function(m) {
 			assert.equal("welcome", m);
 			_client.disconnect();
