@@ -113,13 +113,26 @@ app.io.route("send message", function(socket, data) {
 });
 ```
 
-**New !** From 0.0.3, it supports namespaces :
+It also supports socket.io namespaces :
 
 ```javascript
 app.io.route("/users", "send message", function(socket, data) {
 	// ...
 });
 ```
+
+### Use session inside IO routes
+
+```javascript
+app.io.route("action", function(socket, data) {
+	if(socket.session.authenticated) {
+		socket.session.foo = "bar";
+		socket.session.save();
+	}
+});
+```
+
+**Warning : you have to call the `socket.session.save([callback])` function after updating the session inside a IO route.**
 
 ### Start Sockpress !
 
