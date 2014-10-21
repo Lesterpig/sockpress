@@ -20,7 +20,7 @@ var app = sockpress.init({
 app.post("/login", function(req, res) {
 	if(!req.session.authenticated) {
 		req.session.authenticated = true;
-		//save if automatic in express routes
+		//save is auto in express routes
 	}
 	res.send({error: null});
 });
