@@ -81,6 +81,7 @@ app.io.route("another simple route", function(socket, data) {
 
 //Namespace test
 app.io.of("/namespace").on("connection", function(socket) {
+	socket.session.namespace = "is accessible from namespace";
 	socket.emit("welcome namespace");
 });
 
