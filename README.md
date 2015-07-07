@@ -46,7 +46,7 @@ An example to work with **connect-redis** session :
 var session = require('express-session');
 var RedisStore = require('connect-redis')(session);
 
-var options = { 
+var options = {
   secret: "a secret key",
   store: new RedisStore({host:'127.0.0.1'}),
   name: "my-cookie-key"
