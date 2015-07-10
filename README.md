@@ -1,4 +1,4 @@
-sockpress
+sockpress [![Build Status](https://travis-ci.org/Lesterpig/sockpress.svg)](https://travis-ci.org/Lesterpig/sockpress)
 =========
 
 A simple express.js and socket.io wrapper for nodejs
