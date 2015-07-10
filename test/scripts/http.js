@@ -1,3 +1,7 @@
+/**
+ * Example sockpress server, used in unit tests.
+ */
+
 'use strict';
 
 var sockpress = require('../../lib/index');
@@ -5,28 +9,25 @@ var assert    = require('assert');
 
 var app = sockpress.init({secret: 'key'});
 
-
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'X-Requested-With');
   next();
 });
 
-app.use(app.express.static(require('path').join(__dirname, '..', 'browser')));
+/** GET TESTS */
 
 app.get('/foo', function(req, res) {
   res.send('bar');
 });
 
 app.get('/increment', function(req, res) {
-  if(!req.session) req.session = {};
   if(!req.session.increment) req.session.increment = 0;
 
   res.send(++req.session.increment + '');
 });
 
 app.get('/session/:param/:value', function(req, res) {
-  if(!req.session) req.session = {};
   req.session[req.params.param] = req.params.value;
 
   res.send('OK');
@@ -35,6 +36,8 @@ app.get('/session/:param/:value', function(req, res) {
 app.get('/session/:param', function(req, res) {
   res.send('' + req.session[req.params.param]);
 });
+
+/** IO TESTS */
 
 app.io.on('connection', function(socket) {
   socket.emit('welcome', 'welcome');
@@ -48,6 +51,11 @@ app.io.on('connection', function(socket) {
   socket.on('set_session', function(o) {
     socket.session[o.param] = o.value;
     socket.session.save();
+    socket.emit('session_set');
+  });
+  socket.on('increment_session', function() {
+    socket.session['increment']++;
+    socket.session.save();
   });
   socket.on('disconnect me', function() {
     socket.disconnect();
@@ -59,6 +67,8 @@ app.io.on('connection', function(socket) {
     joinRoom(socket, room);
   });
 });
+
+/** IO ROUTE TESTS */
 
 app.io.route('simple route', function(socket, data) {
   socket.emit('simple route ok');
@@ -79,19 +89,37 @@ app.io.route('another simple route', function(socket, data) {
   socket.emit('another simple route ok', {foo: 'bar'});
 });
 
-//Namespace test
+/** NAMESPACE TESTS */
+
 app.io.of('/namespace').on('connection', function(socket) {
   socket.session.namespace = 'is accessible from namespace';
   socket.emit('welcome namespace');
+  socket.on('get_session', function(param) {
+    socket.emit('session_param', {param: param, value: socket.session[param]});
+  });
+  socket.on('set_session', function(o) {
+    socket.session[o.param] = o.value;
+    socket.session.save();
+  });
 });
 
 app.io.route('/namespace', 'ping namespace', function(socket, data) {
   socket.emit('pong namespace', data);
 });
 
-app.listen(3333, function() {
-  process.stdout.write('READY');
-});
+/** START! */
+module.exports = {
+  server: null,
+  start: function(done){
+    this.server = app.listen(3333, done);
+  },
+  stop: function(done){
+    if(this.server)
+      this.server.close(done);
+    else
+      done();
+  }
+}
 
 function joinRoom(socket, room) {
   socket.join(room);

@@ -1,3 +1,7 @@
+/**
+ * Example sockpress server, used in unit tests.
+ */
+
 'use strict';
 
 var sockpress = require('../../lib/index');
@@ -22,6 +26,16 @@ app.io.on('connection', function(socket) {
   });
 });
 
-app.listen(3333, function() {
-  process.stdout.write('READY');
-});
+/** START! */
+module.exports = {
+  server: null,
+  start: function(done){
+    this.server = app.listen(3334, done);
+  },
+  stop: function(done){
+    if(this.server)
+      this.server.close(done);
+    else
+      done();
+  }
+}
