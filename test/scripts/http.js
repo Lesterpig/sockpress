@@ -107,6 +107,13 @@ app.io.route('/namespace', 'ping namespace', function(socket, data) {
   socket.emit('pong namespace', data);
 });
 
+/** GENERATE ARTIFICIAL LOAD */
+
+for(var i = 0; i < 200; i++){
+  app.io.route('load_' + i, function(){});
+  app.io.route('/namespace', 'load_' + i, function(){});
+}
+
 /** START! */
 module.exports = {
   server: null,

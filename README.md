@@ -60,7 +60,7 @@ If you dont want sockpress to create a session store, just pass `options.disable
 
 ### Use it with HTTPS
 
-**New !** You can use sockpress as a HTTPS server. Just pass a `https` option to sockpress, containing https details.
+You can use sockpress as a HTTPS server. Just pass a `https` option to sockpress, containing https details.
 
 ```javascript
 var options = {
@@ -155,6 +155,4 @@ npm test
 Project Status
 --------------
 
-The project is new on github. However, it **seems** ready for production.
-
-I use it in my personnal projects, and it works well. **sockpress@0.1.0** would be released soon for production purposes.
+Actively maintained :)

@@ -328,6 +328,24 @@ function runBasicTests() {
       done();
     });
   });
+
+  it('should handle 100 clients easily, even with a large number of routes', function(done) {
+    var _welcomeCount = 0;
+    var _clients = [];
+    for(var i = 0; i < 100; i++){
+      _clients[i] = socketClient(__BASE_URL, {
+        'force new connection': true
+      });
+      _clients[i].on('welcome', function(){
+        if(++_welcomeCount === 100){
+          done();
+        }
+      });
+      _clients[i].on('error', function(e){
+        throw new Error(e);
+      });
+    }
+  });
 }
 
 /**
