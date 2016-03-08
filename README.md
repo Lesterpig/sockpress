@@ -17,6 +17,8 @@ Install
 npm install sockpress
 ```
 
+Sockpress is compatible by every version of node from v0.12
+
 How to use ?
 ------------
 
@@ -144,7 +146,7 @@ app.listen(3000, "127.0.0.1");
 
 see [nodejs http(s) doc](http://nodejs.org/api/http.html#http_server_listen_port_hostname_backlog_callback)
 
-### Test Sockpress (needs a GUI for browser tests)
+### Test Sockpress
 
 ```bash
 git clone https://github.com/Lesterpig/sockpress.git
@@ -155,4 +157,4 @@ npm test
 Project Status
 --------------
 
-Actively maintained :)
+This project is maintained for bug fixes and compatibility with newer versions of express/socket.io, but no new features are planned.

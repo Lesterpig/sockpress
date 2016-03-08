@@ -29,7 +29,6 @@ app.get('/increment', function(req, res) {
 
 app.get('/session/:param/:value', function(req, res) {
   req.session[req.params.param] = req.params.value;
-
   res.send('OK');
 });
 

@@ -7,7 +7,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 var assert       = require('assert');
 var request      = require('request');
-var xhr          = require('./xhr');
 var socketClient = require('socket.io-client');
 var __BASE_URL;
 
@@ -66,7 +65,7 @@ describe('Sockpress (HTTP)', function() {
         _client.on('pong namespace', function(data) {
           assert.equal('hello', data);
           done();
-        })
+        });
       });
     });
 
@@ -95,20 +94,6 @@ describe('Sockpress (HTTP)', function() {
       jar: cookies
     });
 
-    before(function(done){
-
-      xhr.callbacks.cookies = function() {
-        this.setDisableHeaderCheck(true);
-        var stdOpen = this.open;
-        this.open = function() {
-          stdOpen.apply(this, arguments);
-          this.setRequestHeader('Cookie', cookies.getCookieString(__BASE_URL));
-        }
-      }
-      done();
-
-    });
-
     it('should increment a session variable through get', function(done) {
       request(__BASE_URL + '/increment', function(err, res, body) {
         assert.strictEqual(null, err);
@@ -129,7 +114,10 @@ describe('Sockpress (HTTP)', function() {
     it('should share session from http to socket', function(done) {
       request.get(__BASE_URL + '/session/variable/value', function() {
         var _client = socketClient(__BASE_URL, {
-          'force new connection': true
+          'force new connection': true,
+          'extraHeaders': {
+            'Cookie': cookies.getCookieString(__BASE_URL)
+          }
         });
         _client.on('welcome', function() {
           _client.emit('get_session', 'variable');
@@ -145,7 +133,10 @@ describe('Sockpress (HTTP)', function() {
     it('should share session from http to socket in namespaces', function(done) {
       request.get(__BASE_URL + '/session/variable2/value2', function() {
         var _client = socketClient(__BASE_URL + '/namespace', {
-          'force new connection': true
+          'force new connection': true,
+          'extraHeaders': {
+            'Cookie': cookies.getCookieString(__BASE_URL)
+          }
         });
         _client.on('welcome namespace', function() {
           _client.emit('get_session', 'variable2');
@@ -160,7 +151,10 @@ describe('Sockpress (HTTP)', function() {
 
     it('should share session from socket to http', function(done) {
       var _client = socketClient(__BASE_URL, {
-        'force new connection': true
+        'force new connection': true,
+        'extraHeaders': {
+          'Cookie': cookies.getCookieString(__BASE_URL)
+        }
       });
       _client.on('welcome', function() {
         _client.emit('set_session', {param: 'variable3', value: 'value3'});
@@ -175,7 +169,10 @@ describe('Sockpress (HTTP)', function() {
 
     it('should be fast and atomic (session only)', function(done) {
       var _client = socketClient(__BASE_URL, {
-        'force new connection': true
+        'force new connection': true,
+        'extraHeaders': {
+          'Cookie': cookies.getCookieString(__BASE_URL)
+        }
       });
       _client.on('welcome', function() {
         _client.emit('set_session', {param: 'increment', value: -1})
@@ -198,7 +195,10 @@ describe('Sockpress (HTTP)', function() {
 
     it('should not give data to wrong client', function(done) {
       var _client = socketClient(__BASE_URL, {
-        'force new connection': true
+        'force new connection': true,
+        'extraHeaders': {
+          'Cookie': cookies.getCookieString(__BASE_URL)
+        }
       });
       _client.on('welcome', function() {
         _client.emit('set_session', {param: 'sensible_data', value: 42});
