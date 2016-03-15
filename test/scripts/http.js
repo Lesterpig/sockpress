@@ -9,6 +9,10 @@ var assert    = require('assert');
 
 var app = sockpress.init({secret: 'key'});
 
+app.rawServer.setTimeout(2000, function() {
+  console.log('Timeout!');
+});
+
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'X-Requested-With');
