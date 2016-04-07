@@ -68,6 +68,19 @@ describe('Sockpress (HTTP)', function() {
         });
       });
     });
+    
+    it('should accept namespaces via Router', function(done) {
+      var _client = socketClient(__BASE_URL + '/router_namespace', {
+        'force new connection': true
+      });
+      _client.on('welcome router_namespace', function() {
+        _client.emit('ping router_namespace', 'hello');
+        _client.on('pong router_namespace', function(data) {
+          assert.equal('hello', data);
+          done();
+        });
+      });
+    });
 
     it('should consider / as default namespace', function(done) {
       var _client = socketClient(__BASE_URL + '/', {
@@ -143,6 +156,25 @@ describe('Sockpress (HTTP)', function() {
           _client.on('session_param', function(o){
             assert.equal(o.param, 'variable2');
             assert.equal(o.value, 'value2');
+            done();
+          });
+        });
+      });
+    });
+    
+    it('should share session from http to socket in namespaces via Router', function(done) {
+      request.get(__BASE_URL + '/session/variable3/value3', function() {
+        var _client = socketClient(__BASE_URL + '/router_namespace', {
+          'force new connection': true,
+          'extraHeaders': {
+            'Cookie': cookies.getCookieString(__BASE_URL)
+          }
+        });
+        _client.on('welcome router_namespace', function() {
+          _client.emit('get_session', 'variable3');
+          _client.on('session_param', function(o){
+            assert.equal(o.param, 'variable3');
+            assert.equal(o.value, 'value3');
             done();
           });
         });

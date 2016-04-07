@@ -110,6 +110,27 @@ app.io.route('/namespace', 'ping namespace', function(socket, data) {
   socket.emit('pong namespace', data);
 });
 
+/** NAMESPACE via Router Instance TESTS */
+var namespacedRouter = new app.io.Router()
+// Optionally set route
+namespacedRouter.route('/')
+.on('connection', function(socket) {
+  socket.session.namespace = 'is accessible from router_namespace';
+  socket.emit('welcome router_namespace');
+  socket.on('get_session', function(param) {
+    socket.emit('session_param', { param: param, value: socket.session[param] });
+  });
+  socket.on('set_session', function(o) {
+    socket.session[o.param] = o.value;
+    socket.session.save();
+  });
+})
+.event('ping router_namespace', function(socket, data) {
+  socket.emit('pong router_namespace', data);
+});
+
+app.io.route('/router_namespace', namespacedRouter);
+
 /** GENERATE ARTIFICIAL LOAD */
 
 for(var i = 0; i < 200; i++){
