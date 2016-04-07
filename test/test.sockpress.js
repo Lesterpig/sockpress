@@ -69,7 +69,7 @@ describe('Sockpress (HTTP)', function() {
       });
     });
 
-    it('should consider / as default namespace', function(done){
+    it('should consider / as default namespace', function(done) {
       var _client = socketClient(__BASE_URL + '/', {
         'force new connection': true
       });
@@ -121,7 +121,7 @@ describe('Sockpress (HTTP)', function() {
         });
         _client.on('welcome', function() {
           _client.emit('get_session', 'variable');
-          _client.on('session_param', function(o){
+          _client.on('session_param', function(o) {
             assert.equal(o.param, 'variable');
             assert.equal(o.value, 'value');
             done();
@@ -158,7 +158,7 @@ describe('Sockpress (HTTP)', function() {
       });
       _client.on('welcome', function() {
         _client.emit('set_session', {param: 'variable3', value: 'value3'});
-        setTimeout(function(){
+        setTimeout(function() {
           request.get(__BASE_URL + '/session/variable3', function(err, res) {
             assert.equal(res.body, 'value3');
             done();
@@ -176,15 +176,15 @@ describe('Sockpress (HTTP)', function() {
       });
       _client.on('welcome', function() {
         _client.emit('set_session', {param: 'increment', value: -1})
-        for(var i = 0; i < 1001; i++){
+        for(var i = 0; i < 1001; i++) {
           _client.emit('increment_session');
         }
         setTimeout(function(){
           _client.emit('get_session', 'increment');
-          _client.on('session_param', function(o){
+          _client.on('session_param', function(o) {
             assert.equal(o.param, 'increment');
             assert.equal(o.value, 1000);
-            request.get(__BASE_URL + '/increment', function(err, res){
+            request.get(__BASE_URL + '/increment', function(err, res) {
               assert.equal(res.body, 1001);
               done();
             });
@@ -201,14 +201,14 @@ describe('Sockpress (HTTP)', function() {
         }
       });
       _client.on('welcome', function() {
-        _client.emit('set_session', {param: 'sensible_data', value: 42});
+        _client.emit('set_session', { param: 'sensible_data', value: 42 });
       });
 
-      _client.on('session_set', function(){
+      _client.on('session_set', function() {
         request.get({
           jar: request.jar(),
           url: __BASE_URL + '/session/sensible_data'
-        }, function(err, res){
+        }, function(err, res) {
           assert.equal(err, null);
           assert(res.body != 42);
           done();
@@ -226,7 +226,7 @@ describe('Sockpress (HTTP)', function() {
       }
     };
 
-    function _checkObj(a, b){
+    function _checkObj(a, b) {
       return JSON.stringify(a) === JSON.stringify(b);
     }
 
@@ -236,7 +236,7 @@ describe('Sockpress (HTTP)', function() {
         'force new connection': true
       });
       _client.on('welcome', function() {
-        _client.emit('set_session', {param: 'from_socket', value: _object});
+        _client.emit('set_session', { param: 'from_socket', value: _object });
       });
       _client.on('session_set', function() {
         _client.emit('get_session', 'from_socket');
@@ -262,7 +262,7 @@ describe('Sockpress (HTTPS)', function() {
 
   var server = require('./scripts/https');
   beforeEach(server.start);
-  afterEach(function(done){
+  afterEach(function(done) {
     server.stop(done);
   });
 
@@ -332,16 +332,16 @@ function runBasicTests() {
   it('should handle 100 clients easily, even with a large number of routes', function(done) {
     var _welcomeCount = 0;
     var _clients = [];
-    for(var i = 0; i < 100; i++){
+    for(var i = 0; i < 100; i++) {
       _clients[i] = socketClient(__BASE_URL, {
         'force new connection': true
       });
-      _clients[i].on('welcome', function(){
+      _clients[i].on('welcome', function() {
         if(++_welcomeCount === 100){
           done();
         }
       });
-      _clients[i].on('error', function(e){
+      _clients[i].on('error', function(e) {
         throw new Error(e);
       });
     }

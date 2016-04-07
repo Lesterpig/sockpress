@@ -10,8 +10,8 @@ var fs        = require('fs');
 var path      = require('path');
 
 var app = sockpress.init({secret: 'key', https: {
-  cert: fs.readFileSync(path.join(__dirname, 'fixtures', 'cert.pem')),
-  key:  fs.readFileSync(path.join(__dirname, 'fixtures', 'key.pem'))
+  cert: fs.readFileSync(path.join(__dirname, 'fixture_certs', 'cert.pem')),
+  key:  fs.readFileSync(path.join(__dirname, 'fixture_certs', 'key.pem'))
 }});
 
 app.get('/foo', function(req, res) {
@@ -29,10 +29,10 @@ app.io.on('connection', function(socket) {
 /** START! */
 module.exports = {
   server: null,
-  start: function(done){
+  start: function(done) {
     this.server = app.listen(3334, done);
   },
-  stop: function(done){
+  stop: function(done) {
     if(this.server)
       this.server.close(done);
     else
