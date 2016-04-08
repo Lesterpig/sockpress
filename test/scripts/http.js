@@ -110,10 +110,10 @@ app.io.route('/namespace', 'ping namespace', function(socket, data) {
   socket.emit('pong namespace', data);
 });
 
-/** NAMESPACE via Router Instance TESTS */
-var namespacedRouter = new app.io.Router()
-// Optionally set route
-namespacedRouter.route('/')
+/** NAMESPACE via Route Instance TESTS */
+var namespacedRoute = app.io.Route()
+
+namespacedRoute
 .on('connection', function(socket) {
   socket.session.namespace = 'is accessible from router_namespace';
   socket.emit('welcome router_namespace');
@@ -125,11 +125,15 @@ namespacedRouter.route('/')
     socket.session.save();
   });
 })
+.use(function(socket, next) {
+  socket.emit('router_namespace middleware message');
+  next();
+})
 .event('ping router_namespace', function(socket, data) {
   socket.emit('pong router_namespace', data);
 });
 
-app.io.route('/router_namespace', namespacedRouter);
+app.io.route('/router_namespace', namespacedRoute);
 
 /** GENERATE ARTIFICIAL LOAD */
 

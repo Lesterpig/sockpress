@@ -69,7 +69,7 @@ describe('Sockpress (HTTP)', function() {
       });
     });
     
-    it('should accept namespaces via Router', function(done) {
+    it('should accept namespaces via Route', function(done) {
       var _client = socketClient(__BASE_URL + '/router_namespace', {
         'force new connection': true
       });
@@ -79,6 +79,16 @@ describe('Sockpress (HTTP)', function() {
           assert.equal('hello', data);
           done();
         });
+      });
+    });
+
+    it('should register middleware in namespaces via Route', function(done) {
+      var _client = socketClient(__BASE_URL + '/router_namespace', {
+        'force new connection': true
+      });
+      _client.on('router_namespace middleware message', function() {
+        // Route.use() fired message
+        done();
       });
     });
 
@@ -162,7 +172,7 @@ describe('Sockpress (HTTP)', function() {
       });
     });
     
-    it('should share session from http to socket in namespaces via Router', function(done) {
+    it('should share session from http to socket in namespaces via Route', function(done) {
       request.get(__BASE_URL + '/session/variable3/value3', function() {
         var _client = socketClient(__BASE_URL + '/router_namespace', {
           'force new connection': true,

@@ -10,8 +10,8 @@ var fs        = require('fs');
 var path      = require('path');
 
 var app = sockpress.init({secret: 'key', https: {
-  cert: fs.readFileSync(path.join(__dirname, 'fixture_certs', 'cert.pem')),
-  key:  fs.readFileSync(path.join(__dirname, 'fixture_certs', 'key.pem'))
+  cert: fs.readFileSync(path.join(__dirname, 'ssl_certs', 'cert.pem')),
+  key:  fs.readFileSync(path.join(__dirname, 'ssl_certs', 'key.pem'))
 }});
 
 app.get('/foo', function(req, res) {
