@@ -111,7 +111,8 @@ app.io.route('/namespace', 'ping namespace', function(socket, data) {
 });
 
 /** NAMESPACE via Route Instance TESTS */
-var namespacedRoute = app.io.Route()
+
+var namespacedRoute = app.io.Route();
 
 namespacedRoute
 .on('connection', function(socket) {
@@ -154,7 +155,7 @@ module.exports = {
     else
       done();
   }
-}
+};
 
 function joinRoom(socket, room) {
   socket.join(room);

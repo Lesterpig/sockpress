@@ -36,8 +36,8 @@ An example to work with classic session store (memory) :
 
 ```javascript
 var options = {
-	secret: "a secret key",
-	saveUninitialized: false
+  secret: "a secret key",
+  saveUninitialized: false
 }
 var app = require("sockpress").init(options);
 ```
@@ -66,11 +66,11 @@ You can use sockpress as a HTTPS server. Just pass a `https` option to sockpress
 
 ```javascript
 var options = {
-	secret: "a secret key",
-	https: {
-		key: privateKey,
-		cert: serverCert
-	}
+  secret: "a secret key",
+  https: {
+    key: privateKey,
+    cert: serverCert
+  }
 }
 var app = require("sockpress").init(options);
 ```
@@ -93,7 +93,7 @@ For classic routes, you don't have to change your code. See [express docs](http:
 
 ```javascript
 app.get("/index", function(req, res) {
-	res.send("Hello World!");
+  res.send("Hello World!");
 });
 ```
 
@@ -101,8 +101,8 @@ For IO routes and configuration, you can use the `app.io` object, and use it as 
 
 ```javascript
 app.io.on("connection", function(socket) {
-	socket.emit("welcome", "Hi ! Welcome on Sockpress server."); //send to the connected socket
-	socket.broadcast.emit("newUser"); //broadcast to other users
+  socket.emit("welcome", "Hi ! Welcome on Sockpress server."); //send to the connected socket
+  socket.broadcast.emit("newUser"); //broadcast to other users
 });
 ```
 
@@ -110,8 +110,8 @@ You can also use a fresh utility provided by Sockpress : **app.io.route(socket, 
 
 ```javascript
 app.io.route("send message", function(socket, data) {
-	socket.emit("message sent", data);
-	socket.broadcast.emit("new message", data);
+  socket.emit("message sent", data);
+  socket.broadcast.emit("new message", data);
 });
 ```
 
@@ -119,7 +119,7 @@ It also supports socket.io namespaces :
 
 ```javascript
 app.io.route("/users", "send message", function(socket, data) {
-	// ...
+  // ...
 });
 ```
 
@@ -127,10 +127,10 @@ app.io.route("/users", "send message", function(socket, data) {
 
 ```javascript
 app.io.route("action", function(socket, data) {
-	if(socket.session.authenticated) {
-		socket.session.foo = "bar";
-		socket.session.save();
-	}
+  if(socket.session.authenticated) {
+    socket.session.foo = "bar";
+    socket.session.save();
+  }
 });
 ```
 
@@ -154,7 +154,35 @@ cd sockpress
 npm test
 ```
 
+### (Advanced) Use modular routes system
+
+If your application uses a modular approach, you would be interested by the modular routes syntax.
+Here is an example where we define a route and then plug it into the sockpress server.
+
+```javascript
+var myRoute = app.io.Route();
+
+// Define route
+myRoute
+.on('connection', function(socket) {
+  // On new connection (standard approach)
+})
+.use(function(socket, next) {
+  // On new connection too (middleware approach)
+})
+.event('name', function(socket, data) {
+  // On particular event
+});
+
+// Plug route!
+app.io.route('/namespace', myRoute);
+```
+
 Project Status
 --------------
 
-This project is maintained for bug fixes and compatibility with newer versions of express/socket.io, but no new features are planned.
+This project is maintained for bug fixes and compatibility with newer versions of express/socket.io, but no new features are planned. It should then be considered "Stable".
+
+Authors:
+- [Lesterpig](https://github.com/lesterpig) (base code, tests)
+- [Stevokk](https://github.com/stevokk) (modular routes)
