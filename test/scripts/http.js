@@ -7,7 +7,7 @@
 var sockpress = require('../../lib/index');
 var assert    = require('assert');
 
-var app = sockpress.init({secret: 'key'});
+var app = sockpress.init({ secret: 'key' });
 
 app.rawServer.setTimeout(2000, function() {
   console.log('Timeout!');
@@ -49,7 +49,7 @@ app.io.on('connection', function(socket) {
     socket.emit('PONG', 'Hi, I am the server');
   });
   socket.on('get_session', function(param) {
-    socket.emit('session_param', {param: param, value: socket.session[param]});
+    socket.emit('session_param', { param: param, value: socket.session[param] });
   });
   socket.on('set_session', function(o) {
     socket.session[o.param] = o.value;
@@ -98,7 +98,7 @@ app.io.of('/namespace').on('connection', function(socket) {
   socket.session.namespace = 'is accessible from namespace';
   socket.emit('welcome namespace');
   socket.on('get_session', function(param) {
-    socket.emit('session_param', {param: param, value: socket.session[param]});
+    socket.emit('session_param', { param: param, value: socket.session[param] });
   });
   socket.on('set_session', function(o) {
     socket.session[o.param] = o.value;
@@ -110,6 +110,31 @@ app.io.route('/namespace', 'ping namespace', function(socket, data) {
   socket.emit('pong namespace', data);
 });
 
+/** NAMESPACE via Route Instance TESTS */
+var namespacedRoute = app.io.Route()
+
+namespacedRoute
+.on('connection', function(socket) {
+  socket.session.namespace = 'is accessible from router_namespace';
+  socket.emit('welcome router_namespace');
+  socket.on('get_session', function(param) {
+    socket.emit('session_param', { param: param, value: socket.session[param] });
+  });
+  socket.on('set_session', function(o) {
+    socket.session[o.param] = o.value;
+    socket.session.save();
+  });
+})
+.use(function(socket, next) {
+  socket.emit('router_namespace middleware message');
+  next();
+})
+.event('ping router_namespace', function(socket, data) {
+  socket.emit('pong router_namespace', data);
+});
+
+app.io.route('/router_namespace', namespacedRoute);
+
 /** GENERATE ARTIFICIAL LOAD */
 
 for(var i = 0; i < 200; i++){
@@ -120,10 +145,10 @@ for(var i = 0; i < 200; i++){
 /** START! */
 module.exports = {
   server: null,
-  start: function(done){
+  start: function(done) {
     this.server = app.listen(3333, done);
   },
-  stop: function(done){
+  stop: function(done) {
     if(this.server)
       this.server.close(done);
     else
