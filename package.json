@@ -4,7 +4,7 @@
   "description": "A simple express.js and socket.io wrapper",
   "main": "lib/index.js",
   "scripts": {
-     "test": "mocha -t 5000 -R dot -b -g '\\(HTTP\\)' && mocha -t 10000 -R dot -b -g 'HTTPS'"
+    "test": "mocha -t 5000 -R dot -b -g '\\(HTTP\\)' && mocha -t 10000 -R dot -b -g 'HTTPS'"
   },
   "repository": {
     "type": "git",
