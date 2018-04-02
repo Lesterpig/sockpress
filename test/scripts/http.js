@@ -5,9 +5,10 @@
 'use strict';
 
 var sockpress = require('../../lib/index');
+var express   = require('express');
 var assert    = require('assert');
 
-var app = sockpress.init({ secret: 'key' });
+var app = sockpress.init(express(), { secret: 'key' });
 
 app.rawServer.setTimeout(2000, function() {
   console.log('Timeout!');

@@ -171,7 +171,7 @@ describe('Sockpress (HTTP)', function() {
         });
       });
     });
-    
+
     it('should share session from http to socket in namespaces via Route', function(done) {
       request.get(__BASE_URL + '/session/variable3/value3', function() {
         var _client = socketClient(__BASE_URL + '/router_namespace', {
@@ -297,7 +297,6 @@ describe('Sockpress (HTTP)', function() {
 });
 
 describe('Sockpress (HTTPS)', function() {
-
   before(function(){
     __BASE_URL = 'https://localhost:3334'
   });
@@ -309,7 +308,6 @@ describe('Sockpress (HTTPS)', function() {
   });
 
   describe('Basic Features', runBasicTests);
-
 });
 
 /**
@@ -339,7 +337,8 @@ function runBasicTests() {
 
   it('should be able to connect to socket.io and emit/receive events', function(done) {
     var _client = socketClient(__BASE_URL, {
-      'force new connection': true
+      'force new connection': true,
+      rejectUnauthorized: false,
     });
     _client.on('welcome', function(m) {
       assert.equal('welcome', m);
@@ -359,7 +358,8 @@ function runBasicTests() {
 
   it('should work with more complex events', function(done) {
     var _client = socketClient(__BASE_URL, {
-      'force new connection': true
+      'force new connection': true,
+      rejectUnauthorized: false,
     });
     _client.on('welcome', function() {
       _client.emit('PING', 'Hi, I am the client');
@@ -376,7 +376,8 @@ function runBasicTests() {
     var _clients = [];
     for(var i = 0; i < 100; i++) {
       _clients[i] = socketClient(__BASE_URL, {
-        'force new connection': true
+        'force new connection': true,
+        rejectUnauthorized: false,
       });
       _clients[i].on('welcome', function() {
         if(++_welcomeCount === 100){

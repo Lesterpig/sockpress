@@ -29,7 +29,7 @@ Sockpress adds the **socket.io** object to the **express** one. **It does not ch
 Sockpress initialization creates express and socket server **with automatic shared session support**.
 
 ```javascript
-var app = require("sockpress").init(options);
+var app = require("sockpress").init([express], [options]);
 ```
 
 An example to work with classic session store (memory) :
@@ -186,3 +186,4 @@ This project is maintained for bug fixes and compatibility with newer versions o
 Authors:
 - [Lesterpig](https://github.com/lesterpig) (base code, tests)
 - [Stevokk](https://github.com/stevokk) (modular routes)
+- [Luiscarbonell](https://github.com/luiscarbonell)
