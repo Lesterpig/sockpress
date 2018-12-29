@@ -2,33 +2,31 @@
  * A classic use of Sockpress with session support (RAM)
  */
 
-'use strict';
+// Load library
+import sockpress from "sockpress";
 
-//Load library
-var sockpress = require("sockpress");
+// Create new engine using default session controller
+var app = sockpress.init({
+	secret: "key"
+});
 
-//Create new engine using default session controller
-var app = sockpress.init({secret: "key"});
-
-//Register sample http routes
-
-app.get("/index", function(req, res) {
+// Register sample http routes
+app.get("/index", (_, res) => {
 	res.send("Hello!");
 });
 
-app.post("/update", function(req, res) {
+app.post("/update", (_, res) => {
 	res.redirect("/index");
 });
 
-//Register sample IO routes
-
-app.io.on("connection", function(socket) {
+// Register sample IO routes
+app.io.on("connection", socket => {
 	console.log("New IO connection (id="+socket.id+")");
 });
 
-app.io.route("ping", function(socket, data) {
+app.io.route("ping", (socket, data) => {
 	socket.emit("pong", data); //echo service
 });
 
-//Start the engine
+// Start the engine
 app.listen(3000);
