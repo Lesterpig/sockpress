@@ -3,21 +3,21 @@
  */
 
 // Load library
-import sockpress from "sockpress";
+import sockpress from 'sockpress'
 
 // Create new engine using default session controller
-var app = sockpress.init({
-	disableSession: true
-});
+const app = sockpress.init({
+  disableSession: true
+})
 
 // Register sample IO routes
-app.io.of("/namespace").on("connection", () => {
-	console.log("Connection on namespace called '/namespace'");
-});
+app.io.of('/namespace').on('connection', () => {
+  console.log("Connection on namespace called '/namespace'")
+})
 
-app.io.route("/namespace", "event", (socket, data) => {
-	console.log("Event called on namespace '/namespace' !");
-});
+app.io.route('/namespace', 'event', (socket, data) => {
+  console.log("Event called on namespace '/namespace' !")
+})
 
 // Start the engine
-app.listen(3000);
+app.listen(3000)

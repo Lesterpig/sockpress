@@ -3,30 +3,30 @@
  */
 
 // Load library
-import sockpress from "sockpress";
+import sockpress from 'sockpress'
 
 // Create new engine using default session controller
-var app = sockpress.init({
-	secret: "key"
-});
+const app = sockpress.init({
+  secret: 'key'
+})
 
 // Register sample http routes
-app.get("/index", (_, res) => {
-	res.send("Hello!");
-});
+app.get('/index', (_, res) => {
+  res.send('Hello!')
+})
 
-app.post("/update", (_, res) => {
-	res.redirect("/index");
-});
+app.post('/update', (_, res) => {
+  res.redirect('/index')
+})
 
 // Register sample IO routes
-app.io.on("connection", socket => {
-	console.log("New IO connection (id="+socket.id+")");
-});
+app.io.on('connection', socket => {
+  console.log('New IO connection (id=' + socket.id + ')')
+})
 
-app.io.route("ping", (socket, data) => {
-	socket.emit("pong", data); //echo service
-});
+app.io.route('ping', (socket, data) => {
+  socket.emit('pong', data) // echo service
+})
 
 // Start the engine
-app.listen(3000);
+app.listen(3000)

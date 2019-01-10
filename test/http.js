@@ -2,265 +2,266 @@
  * HTTP UNIT TESTS FOR SOCKPRESS.
  */
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+import assert from 'assert'
+import Request from 'request'
+import socketClient from 'socket.io-client'
+import commonTest from './common'
+import socketTest from './socket'
+import server from './scripts/http'
 
-import assert from 'assert';
-import Request from 'request';
-import socketClient from 'socket.io-client';
-import commonTest from './common';
-import socketTest from './socket';
-
-describe('Sockpress (HTTP)', function() {
-  let __BASE_URL = 'http://localhost:3333';
-  let server;
-
-  before(function(){
-    server = require('./scripts/http').default;
-  });
+describe('Sockpress (HTTP)', () => {
+  const BASEURL = 'http://localhost:3333'
 
   beforeEach(() => {
-    server.start();
-  });
-  afterEach(function(done){
-    server.stop(done);
-  });
+    server.start()
+  })
+  afterEach((done) => {
+    server.stop(done)
+  })
 
-  describe('Basic Features', commonTest(__BASE_URL));
+  describe('Basic Features', commonTest(BASEURL))
 
-  describe('Socket.IO Features', function() {
-    socketTest(__BASE_URL)('');
-  });
+  describe('Socket.IO Features', () => {
+    socketTest(BASEURL)('')
+  })
 
-  describe('IO Routes Features', function() {
-
-    it('should work with one route', function(done) {
-      var _client = socketClient(__BASE_URL, {
+  describe('IO Routes Features', () => {
+    it('should work with one route', (done) => {
+      const client = socketClient(BASEURL, {
         'force new connection': true
-      });
-      _client.on('welcome', function() {
-        _client.emit('simple route');
-        _client.on('simple route ok', done);
-      });
-    });
+      })
+      client.on('welcome', () => {
+        client.emit('simple route')
+        client.on('simple route ok', () => { client.disconnect(); done() })
+      })
+    })
 
-    it('should work with another route', function(done) {
-      var _client = socketClient(__BASE_URL, {
+    it('should work with another route', (done) => {
+      const client = socketClient(BASEURL, {
         'force new connection': true
-      });
-      _client.on('welcome', function() {
-        _client.emit('another simple route', 'hello');
-        _client.on('simple route ok', function() {
+      })
+      client.on('welcome', () => {
+        client.emit('another simple route', 'hello')
+        client.on('simple route ok', () => {
           throw Error('Unexpected ok signal')
-        });
-        _client.on('another simple route ok', function(m) {
-          assert.equal(m.foo, 'bar');
-          done();
-        });
-      });
-    });
+        })
+        client.on('another simple route ok', (m) => {
+          assert.strictEqual(m.foo, 'bar')
+          client.disconnect()
+          done()
+        })
+      })
+    })
 
-    it('should accepts namespaces', function(done) {
-      var _client = socketClient(__BASE_URL + '/namespace', {
+    it('should accepts namespaces', (done) => {
+      const client = socketClient(BASEURL + '/namespace', {
         'force new connection': true
-      });
-      _client.on('welcome namespace', function() {
-        _client.emit('ping namespace', 'hello');
-        _client.on('pong namespace', function(data) {
-          assert.equal('hello', data);
-          done();
-        });
-      });
-    });
-    
-    it('should accept namespaces via Route', function(done) {
-      var _client = socketClient(__BASE_URL + '/router_namespace', {
-        'force new connection': true
-      });
-      _client.on('welcome router_namespace', function() {
-        _client.emit('ping router_namespace', 'hello');
-        _client.on('pong router_namespace', function(data) {
-          assert.equal('hello', data);
-          done();
-        });
-      });
-    });
+      })
+      client.on('welcome namespace', () => {
+        client.emit('ping namespace', 'hello')
+        client.on('pong namespace', (data) => {
+          assert.strictEqual('hello', data)
+          client.disconnect()
+          done()
+        })
+      })
+    })
 
-    it('should register middleware in namespaces via Route', function(done) {
-      var _client = socketClient(__BASE_URL + '/router_namespace', {
+    it('should accept namespaces via Route', (done) => {
+      const client = socketClient(BASEURL + '/router_namespace', {
         'force new connection': true
-      });
-      _client.on('router_namespace middleware message', function() {
+      })
+      client.on('welcome router_namespace', () => {
+        client.emit('ping router_namespace', 'hello')
+        client.on('pong router_namespace', (data) => {
+          assert.strictEqual('hello', data)
+          client.disconnect()
+          done()
+        })
+      })
+    })
+
+    it('should register middleware in namespaces via Route', (done) => {
+      const client = socketClient(BASEURL + '/router_namespace', {
+        'force new connection': true
+      })
+      client.on('router_namespace middleware message', () => {
         // Route.use() fired message
-        done();
-      });
-    });
+        client.disconnect()
+        done()
+      })
+    })
 
-    it('should consider / as default namespace', function(done) {
-      var _client = socketClient(__BASE_URL + '/', {
+    it('should consider / as default namespace', (done) => {
+      const client = socketClient(BASEURL + '/', {
         'force new connection': true
-      });
-      _client.on('welcome', function() {
-        _client.emit('simple route');
-        _client.on('simple route ok', done);
-      });
-    });
+      })
+      client.on('welcome', () => {
+        client.emit('simple route')
+        client.on('simple route ok', () => { client.disconnect(); done() })
+      })
+    })
 
-    socketTest(__BASE_URL)('route ');
-  });
+    socketTest(BASEURL)('route ')
+  })
 
-  describe('Session Features', function() {
-
+  describe('Session Features', () => {
     /**
      * COOKIES INIT
      */
 
-    const cookies = Request.jar();
+    const cookies = Request.jar()
     const request = Request.defaults({
       jar: cookies
-    });
+    })
 
-    it('should increment a session variable through get', function(done) {
-      request(__BASE_URL + '/increment', function(err, res, body) {
-        assert.strictEqual(null, err);
-        assert.equal(1, body);
-        request(__BASE_URL + '/increment', function(err, res, body) {
-          assert.strictEqual(null, err);
-          assert.equal(2, body);
-          request(__BASE_URL + '/increment', function(err, res, body) {
-            assert.strictEqual(null, err);
-            assert.equal(3, body);
-            done();
-          });
-        });
-      });
+    it('should increment a session variable through get', (done) => {
+      request(BASEURL + '/increment', (err, res, body) => {
+        assert.strictEqual(null, err)
+        assert.strictEqual('1', body)
+        request(BASEURL + '/increment', (err, res, body) => {
+          assert.strictEqual(null, err)
+          assert.strictEqual('2', body)
+          request(BASEURL + '/increment', (err, res, body) => {
+            assert.strictEqual(null, err)
+            assert.strictEqual('3', body)
+            done()
+          })
+        })
+      })
+    })
 
-    });
-
-    it('should share session from http to socket', function(done) {
-      request.get(__BASE_URL + '/session/variable/value', function() {
-        var _client = socketClient(__BASE_URL, {
+    it('should share session from http to socket', (done) => {
+      request.get(BASEURL + '/session/variable/value', () => {
+        const client = socketClient(BASEURL, {
           'force new connection': true,
           'extraHeaders': {
-            'Cookie': cookies.getCookieString(__BASE_URL)
+            'Cookie': cookies.getCookieString(BASEURL)
           }
-        });
-        _client.on('welcome', function() {
-          _client.emit('get_session', 'variable');
-          _client.on('session_param', function(o) {
-            assert.equal(o.param, 'variable');
-            assert.equal(o.value, 'value');
-            done();
-          });
-        });
-      });
-    });
+        })
+        client.on('welcome', () => {
+          client.emit('get_session', 'variable')
+          client.on('session_param', (o) => {
+            assert.strictEqual(o.param, 'variable')
+            assert.strictEqual(o.value, 'value')
+            client.disconnect()
+            done()
+          })
+        })
+      })
+    })
 
-    it('should share session from http to socket in namespaces', function(done) {
-      request.get(__BASE_URL + '/session/variable2/value2', function() {
-        var _client = socketClient(__BASE_URL + '/namespace', {
+    it('should share session from http to socket in namespaces', (done) => {
+      request.get(BASEURL + '/session/variable2/value2', () => {
+        const client = socketClient(BASEURL + '/namespace', {
           'force new connection': true,
           'extraHeaders': {
-            'Cookie': cookies.getCookieString(__BASE_URL)
+            'Cookie': cookies.getCookieString(BASEURL)
           }
-        });
-        _client.on('welcome namespace', function() {
-          _client.emit('get_session', 'variable2');
-          _client.on('session_param', function(o){
-            assert.equal(o.param, 'variable2');
-            assert.equal(o.value, 'value2');
-            done();
-          });
-        });
-      });
-    });
+        })
+        client.on('welcome namespace', () => {
+          client.emit('get_session', 'variable2')
+          client.on('session_param', (o) => {
+            assert.strictEqual(o.param, 'variable2')
+            assert.strictEqual(o.value, 'value2')
+            client.disconnect()
+            done()
+          })
+        })
+      })
+    })
 
-    it('should share session from http to socket in namespaces via Route', function(done) {
-      request.get(__BASE_URL + '/session/variable3/value3', function() {
-        var _client = socketClient(__BASE_URL + '/router_namespace', {
+    it('should share session from http to socket in namespaces via Route', (done) => {
+      request.get(BASEURL + '/session/variable3/value3', () => {
+        const client = socketClient(BASEURL + '/router_namespace', {
           'force new connection': true,
           'extraHeaders': {
-            'Cookie': cookies.getCookieString(__BASE_URL)
+            'Cookie': cookies.getCookieString(BASEURL)
           }
-        });
-        _client.on('welcome router_namespace', function() {
-          _client.emit('get_session', 'variable3');
-          _client.on('session_param', function(o){
-            assert.equal(o.param, 'variable3');
-            assert.equal(o.value, 'value3');
-            done();
-          });
-        });
-      });
-    });
+        })
+        client.on('welcome router_namespace', () => {
+          client.emit('get_session', 'variable3')
+          client.on('session_param', (o) => {
+            assert.strictEqual(o.param, 'variable3')
+            assert.strictEqual(o.value, 'value3')
+            client.disconnect()
+            done()
+          })
+        })
+      })
+    })
 
-    it('should share session from socket to http', function(done) {
-      var _client = socketClient(__BASE_URL, {
+    it('should share session from socket to http', (done) => {
+      const client = socketClient(BASEURL, {
         'force new connection': true,
         'extraHeaders': {
-          'Cookie': cookies.getCookieString(__BASE_URL)
+          'Cookie': cookies.getCookieString(BASEURL)
         }
-      });
-      _client.on('welcome', function() {
-        _client.emit('set_session', {param: 'variable3', value: 'value3'});
-        setTimeout(function() {
-          request.get(__BASE_URL + '/session/variable3', function(err, res) {
-            assert.equal(res.body, 'value3');
-            done();
-          });
-        }, 10);
-      });
-    });
+      })
+      client.on('welcome', () => {
+        client.emit('set_session', { param: 'variable3', value: 'value3' })
+        setTimeout(() => {
+          request.get(BASEURL + '/session/variable3', (_, res) => {
+            assert.strictEqual(res.body, 'value3')
+            client.disconnect()
+            done()
+          })
+        }, 10)
+      })
+    })
 
-    it('should be fast and atomic (session only)', function(done) {
-      var _client = socketClient(__BASE_URL, {
+    it('should be fast and atomic (session only)', (done) => {
+      const client = socketClient(BASEURL, {
         'force new connection': true,
         'extraHeaders': {
-          'Cookie': cookies.getCookieString(__BASE_URL)
+          'Cookie': cookies.getCookieString(BASEURL)
         }
-      });
-      _client.on('welcome', function() {
-        _client.emit('set_session', {param: 'increment', value: -1})
-        for(var i = 0; i < 1001; i++) {
-          _client.emit('increment_session');
+      })
+      client.on('welcome', () => {
+        client.emit('set_session', { param: 'increment', value: -1 })
+        for (let i = 0; i < 1001; i++) {
+          client.emit('increment_session')
         }
-        setTimeout(function(){
-          _client.emit('get_session', 'increment');
-          _client.on('session_param', function(o) {
-            assert.equal(o.param, 'increment');
-            assert.equal(o.value, 1000);
-            request.get(__BASE_URL + '/increment', function(err, res) {
-              assert.equal(res.body, 1001);
-              done();
-            });
-          });
-        }, 200);
-      });
-    });
+        setTimeout(() => {
+          client.emit('get_session', 'increment')
+          client.on('session_param', (o) => {
+            assert.strictEqual(o.param, 'increment')
+            assert.strictEqual(o.value, 1000)
+            request.get(BASEURL + '/increment', (_, res) => {
+              assert.strictEqual(res.body, '1001')
+              client.disconnect()
+              done()
+            })
+          })
+        }, 200)
+      })
+    })
 
-    it('should not give data to wrong client', function(done) {
-      var _client = socketClient(__BASE_URL, {
+    it('should not give data to wrong client', (done) => {
+      const client = socketClient(BASEURL, {
         'force new connection': true,
         'extraHeaders': {
-          'Cookie': cookies.getCookieString(__BASE_URL)
+          'Cookie': cookies.getCookieString(BASEURL)
         }
-      });
-      _client.on('welcome', function() {
-        _client.emit('set_session', { param: 'sensible_data', value: 42 });
-      });
+      })
+      client.on('welcome', () => {
+        client.emit('set_session', { param: 'sensibledata', value: 42 })
+      })
 
-      _client.on('session_set', function() {
+      client.on('session_set', () => {
         request.get({
           jar: request.jar(),
-          url: __BASE_URL + '/session/sensible_data'
-        }, function(err, res) {
-          assert.equal(err, null);
-          assert(res.body != 42);
-          done();
-        });
-      });
-    });
+          url: BASEURL + '/session/sensibledata'
+        }, (err, res) => {
+          assert.strictEqual(err, null)
+          assert(res.body !== 42)
+          client.disconnect()
+          done()
+        })
+      })
+    })
 
-    var _object = {
+    const object = {
       foo: 'bar',
       number: 1,
       array: [1, false, 'a', null, 2.22222222],
@@ -268,32 +269,28 @@ describe('Sockpress (HTTP)', function() {
         a: 'sub',
         'complete-object': true
       }
-    };
-
-    function _checkObj(a, b) {
-      return JSON.stringify(a) === JSON.stringify(b);
     }
 
-    it('should preserve var type', function(done) {
+    const checkObj = (a, b) => JSON.stringify(a) === JSON.stringify(b)
 
-      var _client = socketClient(__BASE_URL, {
+    it('should preserve var type', (done) => {
+      const client = socketClient(BASEURL, {
         'force new connection': true
-      });
-      _client.on('welcome', function() {
-        _client.emit('set_session', { param: 'from_socket', value: _object });
-      });
-      _client.on('session_set', function() {
-        _client.emit('get_session', 'from_socket');
-      });
-      _client.on('session_param', function(o) {
-        _checkObj(o.value, _object);
-        request.get(__BASE_URL + '/session/from_socket', function(err, res) {
-          _checkObj(res.body, _object);
-          done();
-        });
-      });
-    });
-
-  });
-
-});
+      })
+      client.on('welcome', () => {
+        client.emit('set_session', { param: 'fromsocket', value: object })
+      })
+      client.on('session_set', () => {
+        client.emit('get_session', 'fromsocket')
+      })
+      client.on('session_param', (o) => {
+        checkObj(o.value, object)
+        request.get(BASEURL + '/session/fromsocket', (_, res) => {
+          checkObj(res.body, object)
+          client.disconnect()
+          done()
+        })
+      })
+    })
+  })
+})
