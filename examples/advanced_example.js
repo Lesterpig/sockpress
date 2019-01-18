@@ -2,23 +2,22 @@
  * A more complex example with no session support and socketIO namespaces
  */
 
-'use strict';
+// Load library
+import sockpress from 'sockpress'
 
-//Load library
-var sockpress = require("sockpress");
+// Create new engine using default session controller
+const app = sockpress.init({
+  disableSession: true
+})
 
-//Create new engine using default session controller
-var app = sockpress.init({disableSession: true});
+// Register sample IO routes
+app.io.of('/namespace').on('connection', () => {
+  console.log("Connection on namespace called '/namespace'")
+})
 
-//Register sample IO routes
+app.io.route('/namespace', 'event', (socket, data) => {
+  console.log("Event called on namespace '/namespace' !")
+})
 
-app.io.of("/namespace").on("connection", function() {
-	console.log("Connection on namespace called '/namespace'");
-});
-
-app.io.route("/namespace", "event", function(socket, data) {
-	console.log("Event called on namespace '/namespace' !");
-});
-
-//Start the engine
-app.listen(3000);
+// Start the engine
+app.listen(3000)
