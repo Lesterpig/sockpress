@@ -8,7 +8,7 @@ Why ?
 
 Because building an app with express and socket.io could be complex and redundant, here is a **really small** wrapper to work with **latest** versions of express.js and socket.io
 
-Written in **full javascript** with the KiSS protocol : *Keep it Short and Simple* !
+Written in **full javascript** with the KiSS motto: *Keep it Short and Simple* !
 
 Install
 -------
@@ -16,8 +16,6 @@ Install
 ```
 npm install sockpress
 ```
-
-Sockpress is compatible by every version of node from v0.12
 
 How to use ?
 ------------
@@ -29,31 +27,31 @@ Sockpress adds the **socket.io** object to the **express** one. **It does not ch
 Sockpress initialization creates express and socket server **with automatic shared session support**.
 
 ```javascript
-var app = require("sockpress").init([express], [options]);
+const app = require("sockpress").init([express], [options])
 ```
 
 An example to work with classic session store (memory) :
 
 ```javascript
-var options = {
+const options = {
   secret: "a secret key",
   saveUninitialized: false
 }
-var app = require("sockpress").init(options);
+const app = require("sockpress").init(options)
 ```
 
 An example to work with **connect-redis** session :
 
 ```javascript
-var session = require('express-session');
-var RedisStore = require('connect-redis')(session);
+const session = require('express-session')
+const RedisStore = require('connect-redis')(session)
 
-var options = {
+const options = {
   secret: "a secret key",
   store: new RedisStore({host:'127.0.0.1'}),
   name: "my-cookie-key"
 }
-var app = require("sockpress").init(options);
+const app = require("sockpress").init(options)
 ```
 
 *[List of available options for sessions](https://github.com/expressjs/session#options)*
@@ -65,14 +63,14 @@ If you dont want sockpress to create a session store, just pass `options.disable
 You can use sockpress as a HTTPS server. Just pass a `https` option to sockpress, containing https details.
 
 ```javascript
-var options = {
+const options = {
   secret: "a secret key",
   https: {
     key: privateKey,
-    cert: serverCert
-  }
+    cert: serverCert,
+  },
 }
-var app = require("sockpress").init(options);
+const app = require("sockpress").init(options)
 ```
 
 *[List of available options for https](http://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener)*
@@ -82,7 +80,7 @@ var app = require("sockpress").init(options);
 You can include your favorite express middleware like a classic express app ! For convenience, sockpress exposes the `express` raw object in `app.express`.
 
 ```javascript
-app.use(app.express.static(require("path").join(__dirname, "static")));
+app.use(app.express.static(require("path").join(__dirname, "static")))
 ```
 
 **Important** : use Express 4 middlewares, see [documentation](http://expressjs.com/migrating-4.html#core-changes).
@@ -92,46 +90,46 @@ app.use(app.express.static(require("path").join(__dirname, "static")));
 For classic routes, you don't have to change your code. See [express docs](http://expressjs.com/4x/api.html).
 
 ```javascript
-app.get("/index", function(req, res) {
-  res.send("Hello World!");
-});
+app.get("/index", (req, res) => {
+  res.send("Hello World!")
+})
 ```
 
 For IO routes and configuration, you can use the `app.io` object, and use it as a classic socket.io object. See [socket.io docs](http://socket.io/docs/).
 
 ```javascript
-app.io.on("connection", function(socket) {
-  socket.emit("welcome", "Hi ! Welcome on Sockpress server."); //send to the connected socket
-  socket.broadcast.emit("newUser"); //broadcast to other users
-});
+app.io.on("connection", (socket) => {
+  socket.emit("welcome", "Hi ! Welcome on Sockpress server.") //send to the connected socket
+  socket.broadcast.emit("newUser") //broadcast to other users
+})
 ```
 
 You can also use a fresh utility provided by Sockpress : **app.io.route(socket, data)**
 
 ```javascript
-app.io.route("send message", function(socket, data) {
-  socket.emit("message sent", data);
-  socket.broadcast.emit("new message", data);
-});
+app.io.route("send message", (socket, data) => {
+  socket.emit("message sent", data)
+  socket.broadcast.emit("new message", data)
+})
 ```
 
 It also supports socket.io namespaces :
 
 ```javascript
-app.io.route("/users", "send message", function(socket, data) {
+app.io.route("/users", "send message", (socket, data) => {
   // ...
-});
+})
 ```
 
 ### Use session inside IO routes
 
 ```javascript
-app.io.route("action", function(socket, data) {
+app.io.route("action", (socket, data) => {
   if(socket.session.authenticated) {
-    socket.session.foo = "bar";
-    socket.session.save();
+    socket.session.foo = "bar"
+    socket.session.save()
   }
-});
+})
 ```
 
 **Warning : you have to call the `socket.session.save([callback])` function after updating the session inside a IO route.**
@@ -139,9 +137,9 @@ app.io.route("action", function(socket, data) {
 ### Start Sockpress !
 
 ```javascript
-app.listen(3000);
+app.listen(3000)
 // or
-app.listen(3000, "127.0.0.1");
+app.listen(3000, "127.0.0.1")
 ```
 
 see [nodejs http(s) doc](http://nodejs.org/api/http.html#http_server_listen_port_hostname_backlog_callback)
@@ -160,22 +158,22 @@ If your application uses a modular approach, you would be interested by the modu
 Here is an example where we define a route and then plug it into the sockpress server.
 
 ```javascript
-var myRoute = app.io.Route();
+const myRoute = app.io.Route()
 
 // Define route
 myRoute
-.on('connection', function(socket) {
+.on('connection', (socket) => {
   // On new connection (standard approach)
 })
-.use(function(socket, next) {
+.use((socket, next) => {
   // On new connection too (middleware approach)
 })
-.event('name', function(socket, data) {
+.event('name', (socket, data) => {
   // On particular event
-});
+})
 
 // Plug route!
-app.io.route('/namespace', myRoute);
+app.io.route('/namespace', myRoute)
 ```
 
 Project Status
@@ -187,3 +185,4 @@ Authors:
 - [Lesterpig](https://github.com/lesterpig) (base code, tests)
 - [Stevokk](https://github.com/stevokk) (modular routes)
 - [Luiscarbonell](https://github.com/luiscarbonell)
+- [OmgImAlexis](https://github.com/OmgImAlexis) (es6 conversion)
