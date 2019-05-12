@@ -25,12 +25,17 @@
   },
   "homepage": "https://github.com/Lesterpig/sockpress",
   "standard": {
-    "globals": ["it", "describe", "beforeEach", "afterEach"]
+    "globals": [
+      "it",
+      "describe",
+      "beforeEach",
+      "afterEach"
+    ]
   },
   "dependencies": {
     "cookie": "0.3.1",
     "cookie-parser": "1.4.3",
-    "esm": "3.0.84",
+    "esm": "3.2.22",
     "express": "4",
     "express-session": "1.15.6",
     "socket.io": "2"
