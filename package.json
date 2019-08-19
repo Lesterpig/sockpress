@@ -1,6 +1,6 @@
 {
   "name": "sockpress",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "A simple express.js and socket.io wrapper",
   "main": "lib/main.js",
   "module": "lib/index.js",
@@ -28,11 +28,11 @@
     "globals": ["it", "describe", "beforeEach", "afterEach"]
   },
   "dependencies": {
-    "cookie": "0.3.1",
-    "cookie-parser": "1.4.3",
-    "esm": "3.0.84",
+    "cookie": "0.4.0",
+    "cookie-parser": "1.4.4",
+    "esm": "3",
     "express": "4",
-    "express-session": "1.15.6",
+    "express-session": "1.16.2",
     "socket.io": "2"
   },
   "devDependencies": {

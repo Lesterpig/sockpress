@@ -8,14 +8,16 @@ Why ?
 
 Because building an app with express and socket.io could be complex and redundant, here is a **really small** wrapper to work with **latest** versions of express.js and socket.io
 
-Written in **full javascript** with the KiSS motto: *Keep it Short and Simple* !
-
 Install
 -------
 
 ```
-npm install sockpress
+yarn install sockpress
 ```
+
+**Important note**: sockpress leverages JavaScript modules since its 1.4.0 version.
+It is bundled with the excellent [esm](https://github.com/standard-things/esm) module for retro-compatibility.
+
 
 How to use ?
 ------------
@@ -27,7 +29,8 @@ Sockpress adds the **socket.io** object to the **express** one. **It does not ch
 Sockpress initialization creates express and socket server **with automatic shared session support**.
 
 ```javascript
-const app = require("sockpress").init([express], [options])
+import sockpress from "sockpress"
+const app = sockpress([express], [options])
 ```
 
 An example to work with classic session store (memory) :
@@ -37,7 +40,7 @@ const options = {
   secret: "a secret key",
   saveUninitialized: false
 }
-const app = require("sockpress").init(options)
+const app = sockpress(options)
 ```
 
 An example to work with **connect-redis** session :
@@ -51,7 +54,7 @@ const options = {
   store: new RedisStore({host:'127.0.0.1'}),
   name: "my-cookie-key"
 }
-const app = require("sockpress").init(options)
+const app = sockpress(options)
 ```
 
 *[List of available options for sessions](https://github.com/expressjs/session#options)*
@@ -70,7 +73,7 @@ const options = {
     cert: serverCert,
   },
 }
-const app = require("sockpress").init(options)
+const app = sockpress(options)
 ```
 
 *[List of available options for https](http://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener)*

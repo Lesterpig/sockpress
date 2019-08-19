@@ -6,7 +6,7 @@
 import sockpress from 'sockpress'
 
 // Create new engine using default session controller
-const app = sockpress.init({
+const app = sockpress({
   disableSession: true
 })
 

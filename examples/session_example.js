@@ -9,7 +9,7 @@ import mongooseSession from 'mongoose-session'
 
 // Create new engine using mongoose session controller
 const store = mongooseSession(mongoose)
-const app = sockpress.init({
+const app = sockpress({
   secret: 'key',
   resave: false,
   store
